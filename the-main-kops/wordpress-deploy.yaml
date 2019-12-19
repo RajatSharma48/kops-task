@@ -1,0 +1,125 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+  
+  
+  labels:
+    app: wordpress-kops
+    chart: wordpress-8.0.3
+    heritage: Helm
+    release: wordpress-kops
+  name: wordpress-kops
+  namespace: default
+  
+  selfLink: /apis/extensions/v1beta1/namespaces/default/deployments/wordpress-kops
+  
+spec:
+  
+  replicas: 1
+  
+  selector:
+    matchLabels:
+      app: wordpress-kops
+      release: wordpress-kops
+  
+  template:
+    metadata:
+      
+      labels:
+        app: wordpress-kops
+        chart: wordpress-8.0.3
+        release: wordpress-kops
+    spec:
+      containers:
+      - env:
+        - name: ALLOW_EMPTY_PASSWORD
+          value: "yes"
+        - name: MARIADB_HOST
+          value: wordpress-kops-mariadb
+        - name: MARIADB_PORT_NUMBER
+          value: "3306"
+        - name: WORDPRESS_DATABASE_NAME
+          value: bitnami_wordpress
+        - name: WORDPRESS_DATABASE_USER
+          value: bn_wordpress
+        - name: WORDPRESS_DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: mariadb-password
+              name: wordpress-kops-mariadb
+        - name: WORDPRESS_USERNAME
+          value: user
+        - name: WORDPRESS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: wordpress-password
+              name: wordpress-kops
+        - name: WORDPRESS_EMAIL
+          value: user@example.com
+        - name: WORDPRESS_FIRST_NAME
+          value: FirstName
+        - name: WORDPRESS_LAST_NAME
+          value: LastName
+        - name: WORDPRESS_HTACCESS_OVERRIDE_NONE
+          value: "no"
+        - name: WORDPRESS_BLOG_NAME
+          value: User's Blog!
+        - name: WORDPRESS_SKIP_INSTALL
+          value: "no"
+        - name: WORDPRESS_TABLE_PREFIX
+          value: wp_
+        - name: WORDPRESS_SCHEME
+          value: http
+        image: docker.io/bitnami/wordpress:5.3.1-debian-9-r0
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 6
+          httpGet:
+            path: /wp-login.php
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 120
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        name: wordpress
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        - containerPort: 443
+          name: https
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 6
+          httpGet:
+            path: /wp-login.php
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        resources:
+          requests:
+            cpu: 300m
+            memory: 512Mi
+        
+        volumeMounts:
+        - mountPath: /bitnami/wordpress
+          name: wordpress-data
+          subPath: wordpress
+      dnsPolicy: ClusterFirst
+      hostAliases:
+      - hostnames:
+        - status.localhost
+        ip: 127.0.0.1
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      
+      volumes:
+      - name: wordpress-data
+        persistentVolumeClaim:
+          claimName: wordpress-kops
