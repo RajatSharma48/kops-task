@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    pv.kubernetes.io/bind-completed: "yes"
+    pv.kubernetes.io/bound-by-controller: "yes"
+    volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/aws-ebs
+  
+  labels:
+    app: wordpress-kops
+    chart: wordpress-8.0.3
+    heritage: Helm
+    release: wordpress-kops
+  name: wordpress-kops
+  namespace: default
+  
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: gp2
+  volumeMode: Filesystem
+  volumeName: pvc-4cc720a3-a37e-4d19-917d-6e0b74118300
+

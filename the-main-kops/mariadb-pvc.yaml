@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    pv.kubernetes.io/bind-completed: "yes"
+    pv.kubernetes.io/bound-by-controller: "yes"
+    volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/aws-ebs
+  
+  labels:
+    app: mariadb
+    component: master
+    heritage: Helm
+    release: wordpress-kops
+  name: data-wordpress-kops-mariadb-0
+  namespace: default
+ 
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Gi
+  storageClassName: gp2
+  volumeMode: Filesystem
+  volumeName: pvc-f2cdc0f3-6507-4abd-9e22-0cff36f60760
+
