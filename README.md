@@ -44,6 +44,8 @@ Sign in to your respective aws console,
 ## 3. Cluster Creation
 #### Note:
     1. You can use environment variables for the arguements that want to add in your cluster.
+    Like export NAME=xyz.com so that you could use them directly by $NAME.
+    And same goes for state, export KOPS_STATE_STORE=s3://<output-you-got-from-s3api>
     2. You can choose your nodes sizes, zones, networking,etc.
     3. Try to use the same name as of your DNS name.
     
@@ -55,14 +57,16 @@ Sign in to your respective aws console,
     --networking <name-of-networking> \
      --topology <private|public> \
      --zones <name-of-zones> \
-     --name <name> --yes
+     --name $NAME \
+     --state $KOPS_STATE_STORE \
+     --yes
  Do validate your cluster once after the successfully creating the cluster. It will take minutes to get your cluster up and running.  
  ##### Validation
  
     kops validate cluster
 You can also update your cluster if you want.
  ##### Update
-    kops update cluster <name> --yes
+    kops update cluster $NAME --yes
 
 Now, if you are done with creating and setting up your cluster, you could use "kubectl" to implement
 kubernetes functionalities.
